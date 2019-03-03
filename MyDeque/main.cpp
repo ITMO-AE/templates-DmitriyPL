@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 
 using namespace std;
 
@@ -92,7 +93,20 @@ int main()
 
     dq.Clear();
 
-    cout << dq.Size();
+    cout << dq.Size() << endl;
+
+    dq.PushBack(50);
+    dq.PushBack(60);
+    dq.PushFront(100);
+    dq.PushFront(210);
+    dq.PushBack(160);
+
+    for (int i = 0; i < dq.Size(); i++)
+        cout << dq[i] << " ";
+
+    cout << endl;
+
+//    dq.At(20) = 30; //Out of range
 
     return 0;
 }
@@ -220,24 +234,33 @@ T &MyDeque<T>::At(int index)
 template<typename T>
 const T &MyDeque<T>::At(int index) const
 {
-    GetDataForIndex(index);
+    try {
+        GetDataForIndex(index);
+    } catch (out_of_range) {}
+
 }
 
 template<typename T>
 T &MyDeque<T>::operator[](const int index)
 {
-    GetDataForIndex(index);
+    try {
+        GetDataForIndex(index);
+    } catch (out_of_range) {}
 }
 
 template<typename T>
 const T &MyDeque<T>::operator[](const int index) const
 {
-    GetDataForIndex(index);
+    try {
+        GetDataForIndex(index);
+    } catch (out_of_range) {}
 }
 
 template<typename T>
 T &MyDeque<T>::GetDataForIndex(int index)
 {
+    if (index < 0 || index > size) throw out_of_range{"Invalid index"};
+
     if (index == 0)
         return LeftSide->data;
     if (index == size-1)
