@@ -15,13 +15,24 @@ public:
 
     void PushBack(T data);
     void PushFront(T data);
+    void PopFront();
+    void Clear();
+
+    T& At(int index);
+    const T& At(int index) const;
 
     T& Front();
+    const T& Front() const;
+
+    T& Back();
+    const T& Back() const;
 
     T& operator[](const int index);
     const T& operator[](const int index) const;
 
 private:
+
+    T& GetDataForIndex(int index);
 
     class Node
     {
@@ -59,8 +70,29 @@ int main()
 
     cout << endl << "Size dq = " << dq.Size() << endl;
 
-    int &a = dq.Front();
-    cout << a << endl;
+    cout << dq.Front() << endl;
+    cout << dq.Back() << endl;
+
+    dq[0] = 100;
+
+    cout << dq[0] << endl;
+
+    dq.PopFront();
+
+    cout << dq[0] << endl;
+
+    for (int i = 0; i < dq.Size(); i++)
+        cout << dq[i] << " ";
+
+    cout << endl;
+
+    dq.At(2) = 30;
+
+    cout << dq.At(2) << endl;
+
+    dq.Clear();
+
+    cout << dq.Size();
 
     return 0;
 }
@@ -75,7 +107,7 @@ MyDeque<T>::MyDeque():
 template<typename T>
 MyDeque<T>::~MyDeque()
 {
-
+    Clear();
 }
 
 template<typename T>
@@ -127,49 +159,84 @@ void MyDeque<T>::PushFront(T data)
 }
 
 template<typename T>
+void MyDeque<T>::PopFront()
+{
+    if (size == 1)
+    {
+       Node *tmp = LeftSide;
+       LeftSide = nullptr;
+       RigthSide = nullptr;
+       delete tmp;
+    }
+    else
+    {
+        Node *tmp = LeftSide;
+        LeftSide = LeftSide->pNext;
+        LeftSide->pPrev = nullptr;
+        delete tmp;
+    }
+    size--;
+}
+
+template<typename T>
+void MyDeque<T>::Clear()
+{
+    while (size)
+    {
+        PopFront();
+    }
+}
+
+template<typename T>
 T &MyDeque<T>::Front()
 {
-    return *(this->LeftSide);
+    return this->LeftSide->data;
+}
+
+template<typename T>
+const T &MyDeque<T>::Front() const
+{
+    return this->LeftSide->data;
+}
+
+template<typename T>
+T &MyDeque<T>::Back()
+{
+   return this->RigthSide->data;
+}
+
+template<typename T>
+const T &MyDeque<T>::Back() const
+{
+    return this->RigthSide->data;
+}
+
+template<typename T>
+T &MyDeque<T>::At(int index)
+{
+    GetDataForIndex(index);
+}
+
+template<typename T>
+const T &MyDeque<T>::At(int index) const
+{
+    GetDataForIndex(index);
 }
 
 template<typename T>
 T &MyDeque<T>::operator[](const int index)
 {
-    if (index == 0)
-        return LeftSide->data;
-    if (index == size-1)
-        return RigthSide->data;
-
-    if (index <= size/2)
-    {
-        int counter = 0;
-        Node *current = this->LeftSide;
-        while (current != nullptr )
-        {
-            if (counter == index)
-                return current->data;
-
-            current = current->pNext;
-            counter++;
-        }
-    }
-    else
-    {
-        int counter = size-1;
-        Node *current = this->RigthSide;
-        while (current != nullptr )
-        {
-            if (counter == index)
-                return current->data;
-
-            current = current->pPrev;
-            counter--;
-        }
-    }
+    GetDataForIndex(index);
 }
 
 template<typename T>
 const T &MyDeque<T>::operator[](const int index) const
+{
+    GetDataForIndex(index);
+}
+
+template<typename T>
+T &MyDeque<T>::GetDataForIndex(int index)
 {
     if (index == 0)
         return LeftSide->data;
